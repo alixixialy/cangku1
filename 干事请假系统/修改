@@ -1,0 +1,15 @@
+<?php
+$conn = mysqli_connect("localhost", "root", "root", "db_database11") or die("连接数据库服务器失败！".mysqli_error()); //连接MySQL服务器，选择数据库
+mysqli_query($conn,"set names utf8");
+$sqlstr = "select * from tb_demo02 order by id";
+$result = mysqli_query($conn,$sqlstr);
+
+while ($rows = mysqli_fetch_row($result)){
+    echo "<tr>";
+    for($i = 0; $i < count($rows); $i++){
+        echo "<td height='25' align='center' class='m_td'>".$rows[$i]."</td>";
+    }
+    echo "</tr>";
+}
+echo "<td class='m_td'><a href='work7.php'>修改</a>/<a href='work8.php'>删除</a></td>";
+?>

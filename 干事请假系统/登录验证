@@ -1,0 +1,18 @@
+<?php
+$conn = mysqli_connect("localhost", "root", "root", "db_database11") or die("连接数据库服务器失败！".mysqli_error()); //连接MySQL服务器，选择数据库
+mysqli_query($conn,"set names utf8");
+if (!($_POST['id'] and $_POST['name'] and $_POST['password'])){
+    echo "输入不允许为空。点击<a href='work.php'>这里</a> 返回";
+}
+else {
+    $sql = "select id from tb_demo01";
+    $sql1 = "select name from tb_demo01";
+    $sql2 = "select password from tb_demo01";
+    if ($sql == $_POST['id'] && $sql1 == $_POST['name'] && $sql2 == $_POST['password'])
+        echo "<a href='important.php'>这里</a>";
+    else {
+        echo "密码或用户名错误" . '<br>';
+        echo "点击<a href='work.php'>这里</a>返回";
+    }
+}
+?>

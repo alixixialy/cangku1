@@ -1,0 +1,17 @@
+<?php
+$conn = mysqli_connect("localhost", "root", "root", "db_database11") or die("连接数据库服务器失败！".mysqli_error()); //连接MySQL服务器，选择数据库
+mysqli_query($conn,"set names utf8");
+if (!($_POST['id'] and $_POST['name'] and $_POST['password'])){
+    echo "输入不允许为空。点击<a href='work.php'>这里</a> 返回";
+}else{
+    $sqlstr1 = "insert into tb_demo01 values('".$_POST['name']."','".$_POST['password']."','".$_POST['id']."')";
+    $sqlstr2 = "insert into tb_demo02 (id) values('".$_POST['id']."')";
+    $result = mysqli_query($conn,$sqlstr1);
+    if ($result){
+        echo "添加成功,点击<a href='important.php'>这里</a>到达主页";
+    }else{
+        echo "<a href='work2.php'>这里</a>";
+    }
+}
+?>
+

@@ -1,76 +1,38 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>注册</title>
-    <style>
-        .error {color: #dc6868;}
-    </style>
-</head>
-<body>
-<?php echo date("Y-m-d")." ";?>
 <?php
-// 定义变量并默认设置为空值
-$nameErr = $emailErr = $idErr =$passwordErr= "";
-$name =$id = $comment = $password ="";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST")
-{
-    if (empty($_POST["name"]))
-    {
-        $nameErr = "名字是必需的";
+include_once("connect.php");
+// 开启Session
+session_start();
+// 处理用户登录信息
+if (isset($_POST['enroll'])) {
+    # 接收用户的注册信息
+    $name = trim($_POST['name']);   //Trim() 函数的功能是去掉首尾空格
+    $password = trim($_POST['password']);
+    $id=trim($_POST['id']);
+    // 判断提交的登录信息
+    $result2=mysqli_query($conn,"select id from tb_demo01");
+    if (($name == '') || ($password == '')||($id == '')) {
+        // 若为空,视为未填写,提示错误,并3秒后返回登录界面
+        header('refresh:3; url=login.html');
+        echo "用户名或密码不能为空,系统将在3秒后跳转到登录界面,请重新填写登录信息!";
+        exit;
     }
-    else
-    {
-        $name = test_input($_POST["name"]);
-        // 检测名字是否只包含字母跟空格
-        if (!preg_match("/^[a-zA-Z ]*$/",$name))
-        {
-            $nameErr = "只允许字母和空格";
+    else if($id!=$result2)
+    { $sqlstr1 = "insert into tb_demo01 values('".$_POST['name']."','".$_POST['password']."','".$_POST['id']."')";
+        $sqlstr2 = "insert into tb_demo02 (id) values('".$_POST['id']."')";
+        $result = mysqli_query($conn,$sqlstr1);
+        $result1=mysqli_query($conn,$sqlstr2);
+        if ($_POST['remember'] == "yes") { // 若勾选7天内自动登录,则将其保存到Cookie并设置保留7天
+            setcookie('id',$id,time()+7*24*60*60);
+            setcookie('username', $name, time()+7*24*60*60);
+            setcookie('code', md5($name.md5($password)), time()+7*24*60*60); //md5()函数会将输入的值，加密，然后转换成16字符的二进制格式
+        } else {
+            // 没有勾选则删除Cookie
+            setcookie('id','',time()-999);
+            setcookie('username', '', time()-999);
+            setcookie('code', '', time()-999);
         }
+        // 处理完附加项后跳转到登录成功的首页
+        header('location:index.php');
     }
-
-    if (empty($_POST["id"]))
-    {
-        $id = "id是必需的";
-    }
-    else
-    {
-        $id = test_input($_POST["id"]);
-    }
-
-    if (empty($_POST["password"]))
-    {
-        $password = "密码是必需的";
-    }
-    else
-    {
-        $password = test_input($_POST["password"]);
-    }
-}
-
-function test_input($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    return $data;
 }
 ?>
-
-<h2>注册</h2>
-<p><span class="error">* 必需字段。</span></p>
-<form method="post" action="work3.php">
-    名字: <input type="text" name="name" value="<?php echo $name;?>">
-    <span class="error">* <?php echo $nameErr;?></span>
-    <br><br>
-    学号:<input type="text" name="id" value="<?php echo $id;?>">
-    <span class="error">*<?php echo $idErr;?></span>
-    <br><br>
-    密码: <input type="text" name="password" value="<?php echo $password;?>">
-    <span class="error">* <?php echo $passwordErr;?></span>
-    <br><br>
-    <input type="submit" name="submit" value="登录">
-</form>
-
-</body>
-</html>

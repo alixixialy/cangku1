@@ -1,13 +1,12 @@
 <?php
-$conn = mysqli_connect("localhost", "root", "root", "db_database11") or die("连接数据库服务器失败！".mysqli_error()); //连接MySQL服务器，选择数据库
-mysqli_query($conn,"set names utf8");
+include_once("connect.php");
 if (!($_POST['comment'] and $_POST['time'])){
-    echo "输入不允许为空。点击<a href='important.php'>这里</a> 返回";
+    exit ;
 }else{
     $sqlstr1 = "insert into tb_demo02 (time,comment) values('".$_POST['time']."','".$_POST['comment']."')";
     $result = mysqli_query($conn,$sqlstr1);
-    $sql1 = "select time from tb_demo02";
-    $sql2 = "select comment from tb_demo02";
+    $sql2 = mysqli_query($conn,"select comment from tb_demo02");
+    $sql1=mysqli_query($conn,"select time from tb_demo02");
     var_dump($sqlstr1);
     if ($result){
         if($sql1 != $_POST['time'])
@@ -20,7 +19,7 @@ if (!($_POST['comment'] and $_POST['time'])){
             echo "重复添加，点击<a href='important.php'>这里</a>返回";
             }
     }else{
-        echo "<a href='work2.php'>这里</a>";
+        exit;
     }
 }
 ?>

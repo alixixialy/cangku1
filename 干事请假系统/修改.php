@@ -1,21 +1,58 @@
 <?php
 include_once("connect.php");
-$sqlstr1 = "update * from tb_demo02 where comment = " . $_POST['comment'];
-$sqlstr2 = "update * from tb_demo02 where time = " . $_POST['time'];
-$id=$_POST['id'];
-$result = mysqli_query($conn, $sqlstr1);
-$result1 = mysqli_query($conn, $sqlstr2);
-$rows = mysqli_fetch_row($result);//将查询结果返回为数组
-$sqlstr3 = "UPDATE tb_demo02 SET id = '$id' WHERE id = 'id'";
-if (mysqli_query($conn, $sqlstr3)) {
-    $response = [
-        'status' => 'success',
-        'message' => 'Password updated successfully'
-    ];
-} else {
-    $response = [
-        'status' => 'error',
-        'message' => 'Error updating password: ' . mysqli_error($conn)
-    ];
+$con = $GLOBALS['con'];
+session_start();
+
+class PasswordUpdate
+{
+    private $con;
+
+    public function __construct($con)
+    {
+        $this->con = $con;
+    }
+
+    public function updatePassword()
+    {
+        if (!isset($_SESSION['id'])) {
+            header('Location: index.html');
+        }
+
+        if (isset($_POST['Submit'])) {
+            $user_id = $_SESSION['id'];
+            $cur_pass = mysqli_real_escape_string($this->con, $_POST['cur_pass']);
+            $pass = mysqli_real_escape_string($this->con, $_POST['pass']);
+
+            $checkPasswordSql = "SELECT * FROM tb_demo01 WHERE id = '$user_id' AND password = '$cur_pass'";
+            $checkPasswordResult = mysqli_query($this->con, $checkPasswordSql);
+
+            if (mysqli_num_rows($checkPasswordResult) == 1) {
+                $updatePasswordSql = "UPDATE user SET password = '$pass' WHERE id = '$user_id'";
+
+                if (mysqli_query($this->con, $updatePasswordSql)) {
+                    $response = [
+                        'status' => 'success',
+                        'message' => 'Password updated successfully'
+                    ];
+                } else {
+                    $response = [
+                        'status' => 'error',
+                        'message' => 'Error updating password: ' . mysqli_error($this->con)
+                    ];
+                }
+            } else {
+                $response = [
+                    'status' => 'error',
+                    'message' => 'Current password is incorrect'
+                ];
+            }
+
+            echo json_encode($response);
+            exit;
+        }
+    }
 }
+
+$passwordUpdate = new PasswordUpdate($con);
+$passwordUpdate->updatePassword();
 ?>

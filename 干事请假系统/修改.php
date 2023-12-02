@@ -20,10 +20,9 @@ class PasswordUpdate
 
         if (isset($_POST['Submit'])) {
             $user_id = $_SESSION['id'];
-            $cur_pass = mysqli_real_escape_string($this->con, $_POST['cur_pass']);
-            $pass = mysqli_real_escape_string($this->con, $_POST['pass']);
+            $pass = mysqli_real_escape_string($this->con, $_POST['password']);
 
-            $checkPasswordSql = "SELECT * FROM tb_demo01 WHERE id = '$user_id' AND password = '$cur_pass'";
+            $checkPasswordSql = "SELECT * FROM tb_demo01 WHERE id = '$user_id' AND password = '$pass'";
             $checkPasswordResult = mysqli_query($this->con, $checkPasswordSql);
 
             if (mysqli_num_rows($checkPasswordResult) == 1) {
@@ -51,8 +50,8 @@ class PasswordUpdate
             exit;
         }
     }
-}
 
+}
 $passwordUpdate = new PasswordUpdate($con);
 $passwordUpdate->updatePassword();
 ?>
